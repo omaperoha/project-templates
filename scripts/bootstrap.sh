@@ -79,23 +79,29 @@ echo ""
 # ── Pre-flight checks ───────────────────────────────────────────────────────
 info "Running pre-flight checks..."
 
-# Check gh CLI
-command -v gh >/dev/null 2>&1 || error "GitHub CLI (gh) not found. Install: https://cli.github.com/"
-ok "gh CLI found"
-
-# Check gh auth
-gh auth status >/dev/null 2>&1 || error "Not authenticated with GitHub. Run: gh auth login"
-ok "GitHub authenticated"
+# Check gh CLI (optional — falls back to local-only mode)
+GH_AVAILABLE=false
+if command -v gh >/dev/null 2>&1; then
+    if gh auth status >/dev/null 2>&1; then
+        GH_AVAILABLE=true
+        ok "gh CLI found and authenticated"
+        # Check GitHub repo doesn't exist
+        if gh repo view "$REPO_FULL" >/dev/null 2>&1; then
+            error "GitHub repo already exists: $REPO_FULL"
+        fi
+        ok "GitHub repo name available"
+    else
+        warn "gh CLI found but not authenticated. Run: gh auth login"
+        warn "Continuing in LOCAL-ONLY mode (no GitHub repo will be created)"
+    fi
+else
+    warn "GitHub CLI (gh) not installed. Install: https://cli.github.com/ or: winget install --id GitHub.cli"
+    warn "Continuing in LOCAL-ONLY mode (no GitHub repo will be created)"
+fi
 
 # Check local dir doesn't exist
 [[ -d "$PROJECT_DIR" ]] && error "Local directory already exists: $PROJECT_DIR"
 ok "Local path available"
-
-# Check GitHub repo doesn't exist
-if gh repo view "$REPO_FULL" >/dev/null 2>&1; then
-    error "GitHub repo already exists: $REPO_FULL"
-fi
-ok "GitHub repo name available"
 
 # Check templates exist
 [[ -f "$TEMPLATES_DIR/gitignore.template" ]] || error "Missing template: $TEMPLATES_DIR/gitignore.template"
@@ -236,9 +242,11 @@ Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>" >/dev/null
 ok "Commit 2/2: CLAUDE.md"
 
 # ── Create GitHub repo and push ────────────────────────────────────────────
-info "Creating GitHub repo: $REPO_FULL (private)..."
-gh repo create "$REPO_FULL" --private --source=. --remote=origin --push >/dev/null 2>&1
-ok "GitHub repo created and pushed"
+if $GH_AVAILABLE; then
+    info "Creating GitHub repo: $REPO_FULL (private)..."
+    gh repo create "$REPO_FULL" --private --source=. --remote=origin --push >/dev/null 2>&1
+    ok "GitHub repo created and pushed"
+fi
 
 # ── Summary ─────────────────────────────────────────────────────────────────
 echo ""
@@ -247,12 +255,28 @@ echo "║              Bootstrap Complete!                            ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 ok "Local:   $PROJECT_DIR"
-ok "GitHub:  https://github.com/$REPO_FULL"
-ok "Branch:  main (2 commits pushed)"
 ok "Type:    $PROJECT_TYPE"
-echo ""
-info "Next steps:"
-echo "  1. cd \"$PROJECT_DIR\""
-echo "  2. Open .claude/CLAUDE.md and fill in remaining {{PLACEHOLDERS}}"
-echo "  3. Start working: claude"
+
+if $GH_AVAILABLE; then
+    ok "GitHub:  https://github.com/$REPO_FULL"
+    ok "Branch:  main (2 commits pushed)"
+    echo ""
+    info "Next steps:"
+    echo "  1. cd \"$PROJECT_DIR\""
+    echo "  2. Open .claude/CLAUDE.md and fill in remaining {{PLACEHOLDERS}}"
+    echo "  3. Start working: claude"
+else
+    warn "GitHub repo was NOT created (gh CLI not available)"
+    ok "Branch:  main (2 local commits)"
+    echo ""
+    info "Next steps:"
+    echo "  1. Create the repo manually: https://github.com/new"
+    echo "     Name: $PROJECT_NAME | Visibility: Private | Do NOT initialize with README"
+    echo "  2. Then run:"
+    echo "     cd \"$PROJECT_DIR\""
+    echo "     git remote add origin https://github.com/$REPO_FULL.git"
+    echo "     git push -u origin main"
+    echo "  3. Open .claude/CLAUDE.md and fill in remaining {{PLACEHOLDERS}}"
+    echo "  4. Start working: claude"
+fi
 echo ""
