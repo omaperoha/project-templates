@@ -197,6 +197,24 @@ You are a **Senior Engineer** for this project.
 2. Never push to `main` without explicit approval.
 3. Ask clarifying questions — never guess.
 
+## Cross-Project Resources
+
+This project was bootstrapped from [project-templates](https://github.com/omaperoha/project-templates).
+
+**Local path:** `H:\Users\Nosotros\Documents\GIT\project-templates`
+
+| Category | Path | Contents |
+|----------|------|----------|
+| **CLAUDE.md templates** | `templates/claude-md/` | `data-platform.md`, `bi-analytics.md` |
+| **Architecture templates** | `templates/architecture/` | `architecture_plan_template.md`, `peer_review_template.md`, `data_validation_checklist_template.md` |
+| **Data profiling notebook** | `templates/notebooks/data-profiling/` | `nb_data_profiling_template.py` — PySpark, 15 cells, 38 checks |
+| **Presentation patterns** | `templates/presentations/` | pptxgenjs patterns and gotchas |
+| **Agent roles** | `agents/` | `data-architect.md`, `security-reviewer.md`, `fabric-specialist.md`, `sql-performance.md`, `peer-review-orchestrator.md` |
+| **Rules** | `rules/` | `pii-handling.md`, `document-standards.md`, `git-workflow.md`, `quality-gates.md` |
+| **Scripts** | `scripts/` | `bootstrap.sh` — new project scaffolding |
+
+Use these resources when starting architecture plans, running peer reviews, or needing guidance. Copy templates into this project — do not modify the originals.
+
 ## Current Work Status
 
 ### Completed

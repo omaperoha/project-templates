@@ -142,6 +142,25 @@ You are a **{{AGENT_ROLE}}** for the {{PROJECT_NAME}} project. Your job is to pl
 
 ---
 
+## Cross-Project Resources
+
+This project was bootstrapped from [project-templates](https://github.com/omaperoha/project-templates).
+
+**Local path:** `H:\Users\Nosotros\Documents\GIT\project-templates`
+
+| Category | Path | Contents |
+|----------|------|----------|
+| **Architecture templates** | `templates/architecture/` | `architecture_plan_template.md` — full Medallion plan; `peer_review_template.md` — multi-agent review; `data_validation_checklist_template.md` — column-by-column validation |
+| **Data profiling notebook** | `templates/notebooks/data-profiling/` | `nb_data_profiling_template.py` — PySpark, 15 cells, 38 checks; `fabric_setup_instructions.md` — Fabric guide |
+| **Presentation patterns** | `templates/presentations/` | pptxgenjs patterns and gotchas |
+| **Agent roles** | `agents/` | `data-architect.md`, `security-reviewer.md`, `fabric-specialist.md`, `sql-performance.md`, `peer-review-orchestrator.md` |
+| **Rules** | `rules/` | `pii-handling.md`, `document-standards.md`, `git-workflow.md`, `quality-gates.md` |
+| **Scripts** | `scripts/` | `bootstrap.sh` — new project scaffolding |
+
+Use these resources when starting architecture plans, running peer reviews, profiling data, or needing security/PII guidance. Copy templates into this project — do not modify the originals.
+
+---
+
 ## Current Work Status (as of {{DATE}})
 
 ### Completed
