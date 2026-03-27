@@ -1,0 +1,35 @@
+# {{PROJECT_NAME}}
+
+> {{PROJECT_DESCRIPTION}}
+
+## Repository Structure
+
+```text
+/pipelines        - Pipeline definitions
+/notebooks        - PySpark/Python notebooks
+/semantic_model   - Semantic model definitions
+/warehouse        - SQL scripts
+/docs             - Architecture diagrams, decisions, documentation
+/scripts          - Utility and helper scripts
+.claude/          - Claude Code config and project memory
+```
+
+## Setup
+
+This project was bootstrapped with [project-templates](https://github.com/omaperoha/project-templates).
+
+### Prerequisites
+
+- Microsoft Fabric workspace access (or your target platform)
+- Python 3.12+
+- Git + GitHub CLI (`gh`)
+
+## Getting Started
+
+1. Clone this repo
+2. Update `.claude/CLAUDE.md` — replace all `{{PLACEHOLDERS}}` with your project details
+3. Start documenting in `/docs`
+
+## Security
+
+This project may contain sensitive data. See `.claude/CLAUDE.md` for security guardrails.

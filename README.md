@@ -4,6 +4,12 @@ Reusable templates, agent roles, rules, and skills for data engineering and BI c
 
 ## Quick Start
 
+0. **Starting from scratch?** Run the bootstrap script to create a new repo with full scaffolding:
+   ```bash
+   bash scripts/bootstrap.sh My-New-Project data-platform
+   ```
+   Project types: `data-platform`, `bi-analytics`, `minimal`
+
 1. Starting a new **data platform** project? Copy `templates/claude-md/data-platform.md` to `.claude/CLAUDE.md`
 2. Starting a new **BI/analytics** project? Copy `templates/claude-md/bi-analytics.md` to `.claude/CLAUDE.md`
 3. Need to **profile source data**? Copy `templates/notebooks/data-profiling/` to your project
@@ -48,10 +54,42 @@ project-templates/
 |   |-- git-workflow.md              # Branch strategy, commit standards
 |   +-- quality-gates.md             # When to review, definition of done
 |
+|-- scripts/                          # Automation scripts
+|   |-- bootstrap.sh                  # Create a new project repo from templates
+|   +-- templates/                    # File templates used by bootstrap.sh
+|       |-- gitignore.template        #   Standard .gitignore
+|       +-- readme.template           #   README.md with placeholders
+|
 +-- skills/                          # Claude Code skill definitions (future)
 ```
 
 ## How to Use Templates
+
+### 0. Bootstrap a New Project (Recommended)
+
+The fastest way to start. Creates a private GitHub repo, local folder, directory skeleton, `.gitignore`, `README.md`, and `CLAUDE.md` in two commits:
+
+```bash
+# From the project-templates repo root:
+bash scripts/bootstrap.sh My-New-Project data-platform
+```
+
+**Arguments:**
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `project-name` | Yes | Repo name and local folder name (e.g., `Acme-Datalake`) |
+| `project-type` | No | `data-platform`, `bi-analytics`, or `minimal` (default: `minimal`) |
+
+**What it does:**
+1. Validates `gh` CLI is installed and authenticated
+2. Creates `H:\Users\Nosotros\Documents\GIT\{project-name}\`
+3. Runs `gh repo create omaperoha/{project-name} --private`
+4. Scaffolds: `/docs`, `/notebooks`, `/pipelines`, `/scripts`, `/semantic_model`, `/warehouse`
+5. Generates `.gitignore` and `README.md` from templates
+6. Copies the CLAUDE.md template for your project type (with name/repo pre-filled)
+7. Makes 2 commits and pushes to GitHub
+
+**After bootstrap**, open `.claude/CLAUDE.md` and fill in remaining `{{PLACEHOLDERS}}`.
 
 ### 1. CLAUDE.md Templates
 
