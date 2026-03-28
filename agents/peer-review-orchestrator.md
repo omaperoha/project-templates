@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document describes how to run a multi-agent peer review using Claude Code's Agent tool. The pattern uses 4 specialized agents reviewing the same document in parallel, then consolidates findings into a single actionable report.
+This document describes how to run a multi-agent peer review using Claude Code's Agent tool. The pattern uses 5 specialized agents reviewing the same document in parallel, then consolidates findings into a single actionable report.
 
-## The 4-Specialist Pattern
+## The 5-Specialist Pattern
 
 | Agent | Role File | Focus |
 |-------|-----------|-------|
@@ -12,6 +12,7 @@ This document describes how to run a multi-agent peer review using Claude Code's
 | IT Security Specialist | `security-reviewer.md` | PII, access control, compliance |
 | Platform Specialist | `fabric-specialist.md` | Platform feasibility, limitations, cost |
 | SQL Performance Specialist | `sql-performance.md` | Query correctness, performance, type safety |
+| BI Engineer | `bi-engineer.md` | Reporting usability, DAX, Copilot readiness, regulatory reports |
 
 ## How to Run a Peer Review
 
@@ -100,13 +101,24 @@ After all 4 agents complete, consolidate into a single report:
 
 ## Customizing the Team
 
-Not every review needs all 4 specialists. Choose based on the document:
+Not every review needs all 5 specialists. Choose based on the document:
 
 | Document Type | Recommended Agents |
 |--------------|-------------------|
-| Architecture plan | All 4 |
+| Star schema / Gold layer design | All 5 (proven effective: 105 raw findings, 60 de-duplicated) |
+| Architecture plan | All 5 |
 | PySpark notebook | Data Architect + SQL Performance + Platform |
 | Security design | Security + Data Architect |
-| DAX measures | SQL Performance + Data Architect |
+| DAX measures | SQL Performance + BI Engineer + Data Architect |
+| Semantic model design | BI Engineer + Platform + SQL Performance |
 | Pipeline design | Platform + Data Architect |
 | Data validation | Data Architect + SQL Performance |
+| Reporting requirements | BI Engineer + Data Architect |
+
+### Lessons Learned (from Fabric-Modeling_Layer-Bank, 2026-03-27)
+
+- **All 5 agents should search the web for current best practices** before reviewing. Add "Before reviewing, search the web for the latest [topic] best practices as of [current date]" to each agent's prompt.
+- **3+ agent convergence = highest confidence.** When 3+ agents independently flag the same issue, it is almost certainly a real problem. Track convergence in the consolidated report.
+- **BI Engineer catches what others miss:** regulatory report mappings (NCUA 5300), missing origination facts, date dimension gaps, Copilot synonym requirements. Always include this agent for financial services projects.
+- **Expect 40-70% de-duplication** across 5 agents. Raw finding count will be high; consolidated count is what matters.
+- **Effort impact is significant:** the Fabric-Modeling_Layer-Bank peer review increased the effort estimate from 236h to 326-360h (+38-52%). Budget for peer review to change the plan.

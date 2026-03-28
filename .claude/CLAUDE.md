@@ -108,10 +108,62 @@ If `gh` is not installed, do these steps manually:
 
 ---
 
+## Post-Bootstrap Checklist (MANDATORY after every new project)
+
+After running bootstrap.sh (or manual Option B), Claude MUST complete these steps before starting work:
+
+### 1. Verify GitHub Connection
+- If `gh` CLI was not available, the user must create the repo manually at https://github.com/new
+- **ALWAYS run `git pull origin main`** before reading any files — the user may have uploaded docs via the GitHub web UI
+- Confirm `git remote -v` shows the correct origin
+
+### 2. Confirm Project Name Match
+- The GitHub repo name and local folder name MUST match
+- If the user created the repo with a different name than bootstrapped, rename the local folder and update ALL references in CLAUDE.md and README.md
+- Do NOT assume the bootstrap name is final — ask the user to confirm
+
+### 3. Fill Placeholders BEFORE Starting Work
+- Read the generated `.claude/CLAUDE.md` and identify ALL `{{PLACEHOLDERS}}`
+- Ask the user for values — do NOT guess or fill with generic text
+- The placeholders define scope, role, and security posture for the entire project
+
+### 4. Discovery Phase (before any design work)
+- Read ALL customer-provided files (Excel, CSV, PDF, images, ERDs)
+- Extract and document: table names, column counts, row counts, join conditions, subject areas, parent-child relationships
+- **Use join conditions from customer spreadsheets** — these are authoritative FK mappings
+- Ask clarifying questions — never guess on business domain, scope, or requirements
+- Save discovery findings to memory
+
+### 5. Peer Review Before Commit
+- NEVER commit a plan or spec without running the 5-agent peer review first
+- The peer review pattern is documented in `agents/peer-review-orchestrator.md`
+- Use 5 agents: Data Architect, Security, Fabric/Platform Specialist, SQL Performance, BI Engineer
+- Consolidate findings, apply all Critical and Important fixes, then commit
+
+### 6. Dual Format Delivery
+- Generate both .md (for GitHub/technical review) and .docx (for non-technical stakeholders)
+- ALWAYS regenerate the .docx after any spec update — do not let them drift out of sync
+- Use `npm install docx` + a generator script for DOCX creation
+
+---
+
+## Known Issues & Workarounds
+
+| Issue | Workaround |
+|-------|-----------|
+| `gh` CLI not installed | Bootstrap runs in local-only mode. User must create repo at github.com/new manually, then `git remote add origin` + `git push`. |
+| User uploads files via GitHub web UI | Always `git pull origin main` before reading docs/. Files may exist on remote but not locally. |
+| Project name changes after bootstrap | Rename local folder with `mv`, then `sed` all references in CLAUDE.md and README.md. Update git remote if needed. |
+| node_modules for DOCX generation | Add `node_modules/` to .gitignore. Only commit package.json, not node_modules. |
+| Mermaid diagrams in DOCX | Mermaid cannot render natively in Word. Convert to text-based relationship tables in the DOCX generator. |
+
+---
+
 ## How Templates Were Built
 
 Every template was extracted from real consulting engagements:
 - **Fabric-Datalake** (`omaperoha/Fabric-Datalake`) — data platform, Medallion architecture, Microsoft Fabric
+- **Fabric-Modeling_Layer-Bank** (`omaperoha/Fabric-Modeling_Layer-Bank`) — Gold star schema design, 5-agent peer review, credit union domain
 - **DASH-Looker-Integration** — BI/analytics, LookML, BigQuery, Looker dashboards
 
 When a project discovers a new reusable pattern, extract it here.
