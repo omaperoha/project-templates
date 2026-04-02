@@ -124,7 +124,7 @@ ok "Git initialized (branch: main)"
 # ── Scaffold directory structure ────────────────────────────────────────────
 info "Scaffolding directory structure..."
 
-DIRS=(docs notebooks pipelines scripts semantic_model warehouse .claude)
+DIRS=(docs notebooks pipelines scripts semantic_model warehouse .claude .claude/skills)
 for dir in "${DIRS[@]}"; do
     mkdir -p "$dir"
     # Add .gitkeep to empty dirs (except .claude which will have CLAUDE.md)

@@ -28,10 +28,24 @@
 
 7. **Least privilege.** Grant the minimum access needed. Default = no PII access. PII access is opt-in, role-based, and audited.
 
+## Defense-in-Depth Pattern (Recommended)
+
+PII protection must be layered across the entire pipeline — not deferred to a single layer:
+
+| Layer | HIGH PII Action | MEDIUM PII Action |
+|-------|----------------|-------------------|
+| **Bronze** | Mask at write time (SHA-256 hash or redact) | Pass through |
+| **Silver** | Already masked | Pseudonymize (consistent hash for joins) |
+| **Gold** | Fully masked — no raw PII reaches consumption | Fully masked |
+| **Semantic Model** | OLS hides columns from unauthorized roles | OLS hides columns |
+| **Row-Level** | RLS filters rows by user/role | RLS filters rows |
+
+**"Accept risk" is NEVER an option.** Defense-in-depth masking is the default. Every project involving PII must implement protections at every layer, not defer to a single point of enforcement.
+
 ## Mitigation Options Template
 
 Present these to the customer for sign-off:
 
-- **Option A: Full OLS + RLS** — All PII columns hidden from non-authorized roles. Requires OLS configuration per table. Most secure.
+- **Option A: Full Defense-in-Depth** — PII masked at every layer (Bronze through Semantic Model). OLS + RLS at consumption. Most secure. **Recommended.**
 - **Option B: Separate PII workspace** — PII-containing tables in a restricted workspace. Business users access only Gold layer with PII removed. Moderate complexity.
-- **Option C: Accepted risk with audit** — Document the risk, implement audit logging, defer masking to Phase 2. Fastest but least secure.
+- ~~**Option C: Accepted risk**~~ — **Not offered.** Risk acceptance for PII is not a valid mitigation strategy. If the customer requests it, document the refusal and explain regulatory exposure.

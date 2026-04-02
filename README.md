@@ -60,7 +60,10 @@ project-templates/
 |       |-- gitignore.template        #   Standard .gitignore
 |       +-- readme.template           #   README.md with placeholders
 |
-+-- skills/                          # Claude Code skill definitions (future)
++-- skills/                          # Claude Code skill definitions
+    |-- fabric-architect/            #   Fabric Medallion architecture
+    |-- docx-generator/              #   Markdown to DOCX converter
+    +-- (more added as patterns emerge)
 ```
 
 ## How to Use Templates

@@ -11,6 +11,18 @@
 | Pipeline design | Recommended | Platform + Data Architect |
 | Documentation / runbook | Optional | Data Architect |
 
+## 3-Agent Review Rule
+
+Before delivering any major document or presentation to the user/customer, run **3 specialist agents** in parallel:
+
+| Agent | Reviews |
+|-------|---------|
+| **Architect Agent** | Technical accuracy, schema consistency, relationship counts, layer design |
+| **Security Agent** | PII handling, OLS/RLS coverage, defense-in-depth compliance |
+| **Presentation Agent** | Readability, slide quality, content rules, competitive claims, ROI math |
+
+Each agent produces findings. Address all Critical and Important findings before delivery. After 5+ iteration cycles, context fragments — relaunch the session with a clean checklist.
+
 ## Validation Checklist Before Delivery
 
 ### Before Customer Presentation

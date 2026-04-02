@@ -45,6 +45,17 @@ main (or master)          <- Production. Never push directly.
    - Addresses [issue/finding reference]
    ```
 
+## Both Pipelines: ETL + CI/CD
+
+Every project should have TWO pipeline definitions:
+
+| Pipeline | Purpose | Tools |
+|----------|---------|-------|
+| **ETL Pipeline** | Data movement: source → Bronze → Silver → Gold | Data Factory, PySpark notebooks |
+| **CI/CD Pipeline** | Deployment: code → test → staging → production | Fabric Git integration, deployment pipelines |
+
+Always mention and document both. ETL handles data; CI/CD handles code and config deployment.
+
 ## What to .gitignore
 
 ```gitignore

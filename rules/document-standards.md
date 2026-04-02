@@ -29,6 +29,21 @@ When referencing other documents in a deliverable:
 - **Code blocks** with language tags for all code snippets
 - **Headings** follow a consistent hierarchy (H1 = doc title, H2 = sections, H3 = subsections)
 
+## Dual Format Delivery
+
+**ALWAYS** generate both formats for every deliverable:
+
+| Format | Audience | Purpose |
+|--------|----------|---------|
+| `.md` (Markdown) | Engineers, GitHub reviewers | Version-controlled, diffable, renders in GitHub |
+| `.docx` (Word) | Non-technical stakeholders, customers | Professional formatting, printable, email-ready |
+
+**Rules:**
+1. Regenerate `.docx` after ANY markdown update — never let them drift out of sync
+2. Use `scripts/md_to_docx.js` (or equivalent) for automated conversion
+3. Commit both formats together in the same commit
+4. Mermaid diagrams in markdown should be replaced with rendered images in docx
+
 ## Version Control for Documents
 
 - Major changes increment version: v1.0 -> v2.0
