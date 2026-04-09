@@ -34,9 +34,14 @@ cd "H:\Users\Nosotros\Documents\GIT\project-templates"
 bash scripts/bootstrap.sh <Project-Name> <project-type>
 ```
 
-The script will either:
+The script will use the first available path:
 - **With `gh` CLI:** Create GitHub repo + local folder + scaffold + push automatically (done!)
-- **Without `gh` CLI:** Create local folder + scaffold only (local-only mode — continue to Step 3)
+- **With classic PAT at `~/.claude/github_pat`:** Create repo via REST API, push, then strip the token from the remote URL (done!) — see [`rules/github-repo-creation.md`](../rules/github-repo-creation.md)
+- **Neither:** Create local folder + scaffold only (local-only mode — continue to Step 3)
+
+**Important:** Fine-grained PATs CANNOT create repos at user level (returns 403). Only classic PATs with `repo` scope work for auto-creation. If the user only has a fine-grained PAT, fall through to Step 3 (manual creation).
+
+**Never embed a PAT in a remote URL permanently** — use it for the initial push and then `git remote set-url origin https://github.com/owner/repo.git` to strip it. The old Fabric-Datalake workflow did this wrong and the token leaked into `.git/config`.
 
 #### Step 3: If `gh` CLI was NOT available — connect to GitHub
 
