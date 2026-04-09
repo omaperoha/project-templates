@@ -10,6 +10,8 @@ Reusable templates, agent roles, rules, and skills for data engineering and BI c
    ```
    Project types: `data-platform`, `bi-analytics`, `minimal`
 
+   On Windows without `gh` CLI, see [`rules/github-repo-creation.md`](rules/github-repo-creation.md) for the PAT / manual / `gh` install fallbacks. The token must live at `~/.claude/github_pat` — never inside any repo.
+
 1. Starting a new **data platform** project? Copy `templates/claude-md/data-platform.md` to `.claude/CLAUDE.md`
 2. Starting a new **BI/analytics** project? Copy `templates/claude-md/bi-analytics.md` to `.claude/CLAUDE.md`
 3. Need to **profile source data**? Copy `templates/notebooks/data-profiling/` to your project
@@ -52,6 +54,7 @@ project-templates/
 |   |-- pii-handling.md              # PII classification and protection
 |   |-- document-standards.md        # Naming, formatting, references
 |   |-- git-workflow.md              # Branch strategy, commit standards
+|   |-- github-repo-creation.md      # Bootstrap fallbacks when `gh` CLI is missing
 |   +-- quality-gates.md             # When to review, definition of done
 |
 |-- scripts/                          # Automation scripts

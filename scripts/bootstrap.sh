@@ -60,7 +60,12 @@ done
 $TYPE_VALID || error "Invalid project type '$PROJECT_TYPE'. Must be one of: ${VALID_TYPES[*]}"
 
 # Validate project name (alphanumeric, hyphens, underscores)
-[[ "$PROJECT_NAME" =~ ^[a-zA-Z0-9_-]+$ ]] || error "Project name must contain only letters, numbers, hyphens, and underscores."
+if [[ ! "$PROJECT_NAME" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    if [[ "$PROJECT_NAME" =~ \  ]]; then
+        error "Project name contains spaces. Rename your local folder to use hyphens (e.g. '$(echo "$PROJECT_NAME" | tr ' ' '-')') before running this script. On Windows, you cannot rmdir the current shell cwd — create the new folder alongside the old one and delete the empty original after closing the shell."
+    fi
+    error "Project name must contain only letters, numbers, hyphens, and underscores."
+fi
 
 PROJECT_DIR="$BASE_PATH/$PROJECT_NAME"
 REPO_FULL="$GITHUB_OWNER/$PROJECT_NAME"
@@ -79,23 +84,52 @@ echo ""
 # ── Pre-flight checks ───────────────────────────────────────────────────────
 info "Running pre-flight checks..."
 
-# Check gh CLI (optional — falls back to local-only mode)
+# Check gh CLI first; if missing, fall back to classic PAT at ~/.claude/github_pat
 GH_AVAILABLE=false
+PAT_AVAILABLE=false
+PAT_FILE="$HOME/.claude/github_pat"
+
 if command -v gh >/dev/null 2>&1; then
     if gh auth status >/dev/null 2>&1; then
         GH_AVAILABLE=true
         ok "gh CLI found and authenticated"
-        # Check GitHub repo doesn't exist
         if gh repo view "$REPO_FULL" >/dev/null 2>&1; then
             error "GitHub repo already exists: $REPO_FULL"
         fi
         ok "GitHub repo name available"
     else
         warn "gh CLI found but not authenticated. Run: gh auth login"
-        warn "Continuing in LOCAL-ONLY mode (no GitHub repo will be created)"
     fi
-else
-    warn "GitHub CLI (gh) not installed. Install: https://cli.github.com/ or: winget install --id GitHub.cli"
+fi
+
+if ! $GH_AVAILABLE && [[ -f "$PAT_FILE" ]]; then
+    GH_TOKEN_FROM_FILE="$(cat "$PAT_FILE")"
+    if [[ -n "$GH_TOKEN_FROM_FILE" ]]; then
+        # Verify token authenticates
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $GH_TOKEN_FROM_FILE" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/user)
+        if [[ "$HTTP_CODE" == "200" ]]; then
+            PAT_AVAILABLE=true
+            ok "Loaded PAT from $PAT_FILE (auth OK)"
+            # Check repo doesn't exist
+            REPO_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                -H "Authorization: Bearer $GH_TOKEN_FROM_FILE" \
+                "https://api.github.com/repos/$REPO_FULL")
+            if [[ "$REPO_CODE" == "200" ]]; then
+                error "GitHub repo already exists: $REPO_FULL"
+            fi
+            ok "GitHub repo name available"
+        else
+            warn "PAT at $PAT_FILE failed auth (HTTP $HTTP_CODE) — ignoring"
+        fi
+    fi
+fi
+
+if ! $GH_AVAILABLE && ! $PAT_AVAILABLE; then
+    warn "No gh CLI and no working PAT at $PAT_FILE"
+    warn "See rules/github-repo-creation.md for fallback options"
     warn "Continuing in LOCAL-ONLY mode (no GitHub repo will be created)"
 fi
 
@@ -246,6 +280,37 @@ if $GH_AVAILABLE; then
     info "Creating GitHub repo: $REPO_FULL (private)..."
     gh repo create "$REPO_FULL" --private --source=. --remote=origin --push >/dev/null 2>&1
     ok "GitHub repo created and pushed"
+elif $PAT_AVAILABLE; then
+    info "Creating GitHub repo via REST API: $REPO_FULL (private)..."
+    CREATE_CODE=$(curl -s -o /tmp/bootstrap_repo_create.json -w "%{http_code}" \
+        -X POST \
+        -H "Authorization: Bearer $GH_TOKEN_FROM_FILE" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -H "Accept: application/vnd.github+json" \
+        -d "{\"name\":\"$PROJECT_NAME\",\"private\":true,\"auto_init\":false,\"has_issues\":true,\"has_wiki\":false}" \
+        https://api.github.com/user/repos)
+    if [[ "$CREATE_CODE" == "201" ]]; then
+        ok "GitHub repo created"
+        # Push using token-embedded remote, then strip the token
+        git remote add origin "https://x-access-token:${GH_TOKEN_FROM_FILE}@github.com/$REPO_FULL.git"
+        if git push -u origin main >/dev/null 2>&1; then
+            # CRITICAL: strip token from remote URL so it isn't stored in .git/config
+            git remote set-url origin "https://github.com/$REPO_FULL.git"
+            ok "Pushed to main and stripped token from remote URL"
+        else
+            warn "Push failed — remote still has token embedded. Run: git remote set-url origin https://github.com/$REPO_FULL.git"
+        fi
+    elif [[ "$CREATE_CODE" == "403" ]]; then
+        warn "REST API returned 403 — your PAT is fine-grained and cannot create repos at user level."
+        warn "Either use a classic PAT with 'repo' scope, or create the repo manually at https://github.com/new"
+        warn "Then run: git remote add origin https://github.com/$REPO_FULL.git && git push -u origin main"
+    else
+        warn "REST API returned $CREATE_CODE. Response:"
+        cat /tmp/bootstrap_repo_create.json | head -c 500; echo
+        warn "Create the repo manually at https://github.com/new and push with git push -u origin main"
+    fi
+    # Clear token from memory (best effort)
+    GH_TOKEN_FROM_FILE=""
 fi
 
 # ── Summary ─────────────────────────────────────────────────────────────────
@@ -257,7 +322,7 @@ echo ""
 ok "Local:   $PROJECT_DIR"
 ok "Type:    $PROJECT_TYPE"
 
-if $GH_AVAILABLE; then
+if $GH_AVAILABLE || $PAT_AVAILABLE; then
     ok "GitHub:  https://github.com/$REPO_FULL"
     ok "Branch:  main (2 commits pushed)"
     echo ""
@@ -266,10 +331,10 @@ if $GH_AVAILABLE; then
     echo "  2. Open .claude/CLAUDE.md and fill in remaining {{PLACEHOLDERS}}"
     echo "  3. Start working: claude"
 else
-    warn "GitHub repo was NOT created (gh CLI not available)"
+    warn "GitHub repo was NOT created (no gh CLI and no working PAT)"
     ok "Branch:  main (2 local commits)"
     echo ""
-    info "Next steps:"
+    info "Next steps (see rules/github-repo-creation.md for full details):"
     echo "  1. Create the repo manually: https://github.com/new"
     echo "     Name: $PROJECT_NAME | Visibility: Private | Do NOT initialize with README"
     echo "  2. Then run:"
