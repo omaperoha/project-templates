@@ -74,6 +74,27 @@ async def generate_all():
 - **Never ask user which voice** until you've generated samples they can listen to
 - Generate 3-4 voice candidates with the SAME TEXT for direct comparison
 - Save samples as `voice_test_<name>.mp3` in the repo so user can compare on any PC
+- **Proven combination for consulting presentations:** `en-US-AvaNeural` for slide narration + `en-US-AndrewNeural` for demo/walkthrough video sections
+
+## Finding Clean Audio Cut Points (RMS Energy Scan)
+When you must cut a monolithic audio file at a specific second, find a natural pause — never cut mid-word:
+
+```python
+import numpy as np
+from moviepy import AudioFileClip
+
+narr = AudioFileClip('narration.mp3')
+
+# Scan around the target time in 0.5s steps — find the quietest window
+for t_start in np.arange(46, 55, 0.5):
+    chunk = narr.subclipped(t_start, t_start + 0.5)
+    frames = np.array([chunk.get_frame(t / 20) for t in range(10)])
+    rms = np.sqrt(np.mean(frames ** 2))
+    label = "QUIET (safe cut)" if rms < 0.02 else ("low" if rms < 0.04 else "LOUD — skip")
+    print(f"  t={t_start:.1f}s  rms={rms:.4f}  {label}")
+```
+
+Cut at the lowest RMS point. Lesson: user reported "clipping 'deliverables'" — the word wasn't finished. RMS scan prevents this.
 
 ## Gotchas
 - Edge TTS requires internet connection (not fully offline)

@@ -101,6 +101,29 @@ final.write_videofile(
 
 ## Audio Mixing (Voice + Background Music)
 
+### Option A — moviepy only (simpler, no extra dependency)
+Mix voice + background music entirely within moviepy using volume multipliers:
+
+```python
+from moviepy import AudioFileClip, CompositeAudioClip
+
+MUSIC_VOL = 0.15  # 15% = music audible but clearly subordinate to voice
+
+narr = AudioFileClip('slide_01_narration.mp3')
+music_raw = AudioFileClip('background_music.mp3')
+
+# Loop music to match narration length
+music = music_raw.with_effects([
+    afx.AudioLoop(duration=narr.duration)
+]).with_volume_scaled(MUSIC_VOL)
+
+mixed = CompositeAudioClip([narr, music])
+# Attach to clip: clip = clip.with_audio(mixed)
+```
+
+**Tuning guide**: `0.10` (barely audible) → `0.15` (standard, proven) → `0.20` (noticeable). Start at `0.15`.
+
+### Option B — pydub (more control, dB units)
 Use `pydub` to overlay background music UNDER the narration at low volume:
 
 ```python
@@ -121,6 +144,8 @@ mixed.export('slide_01_mixed.wav', format='wav')
 ```
 
 **Critical**: `MUSIC_DB = -14` is TOO LOUD for consulting narration. Use `-20` minimum. User feedback: "Is it too difficult to raise a little the voice over the background music?"
+
+**When to prefer pydub**: when you need precise dB control, multi-track mixing, or are already using pydub for other audio work. Otherwise Option A (moviepy only) is simpler.
 
 ## Crossfade Transition Variants
 
