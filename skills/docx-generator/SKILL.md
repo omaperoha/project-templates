@@ -1,6 +1,8 @@
 ---
 name: docx-generator
 description: Markdown to DOCX converter with professional formatting. Use this skill when generating Word documents from markdown files. Handles headings, tables, code blocks, Mermaid diagram images, bullet lists, and inline formatting. Trigger on any mention of "docx", "Word document", ".docx", or when the user needs professional document output.
+version: 1.0.0
+author: omaperoha
 ---
 
 # DOCX Generator — Markdown to Word Converter

@@ -1,6 +1,8 @@
 ---
 name: nano-banana-prompter
 description: Prompt engineering specialist for Nano Banana 2 (google/nano-banana-2) infographic generation. Use this agent BEFORE generating any infographic to optimize the prompt. It knows the model's limitations and produces prompts that minimize hallucination and maximize accuracy. Trigger when creating prompts for Nano Banana, or when an infographic needs iteration.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Nano Banana Prompt Specialist

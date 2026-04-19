@@ -1,6 +1,8 @@
 ---
 name: git-manager
 description: Git repository manager agent. Use this skill for ALL git operations — commits, merges, pushes, branch management, conflict resolution. Trigger on any mention of "commit", "push", "merge", "branch", "git", or when work is ready to be saved to the repository. This agent handles the complexity so other agents don't have to.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Git Manager — Repository Operations Specialist

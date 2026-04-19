@@ -1,6 +1,8 @@
 ---
 name: team-status
 description: "Show the status of all specialist agents/subagents. Use /team-status to see which agents are available, running, or idle. Also reports if skill-builder has been running this session."
+version: 1.0.0
+author: omaperoha
 ---
 
 # /team-status — Agent Team Status

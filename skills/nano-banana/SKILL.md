@@ -1,6 +1,8 @@
 ---
 name: nano-banana
 description: Replicate API specialist for generating infographics using Nano Banana 2 (google/nano-banana-2, Gemini 3.1 Flash image model). Use this skill whenever you need to generate AI images, infographics, or visual assets via the Replicate API. Trigger on any mention of "infographic", "Nano Banana", "Replicate API", "generate image", or when creating visual content for presentations.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Nano Banana 2 — Replicate API Image Generation Specialist

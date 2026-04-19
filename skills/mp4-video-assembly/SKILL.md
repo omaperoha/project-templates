@@ -1,6 +1,8 @@
 ---
 name: MP4 Video Assembly
 description: Build professional narrated videos as standalone MP4 files. Skip PowerPoint — assemble slides + audio + embedded video directly with moviepy.
+version: 1.0.0
+author: omaperoha
 ---
 
 # MP4 Video Assembly

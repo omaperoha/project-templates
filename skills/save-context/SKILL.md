@@ -1,6 +1,8 @@
 ---
 name: save-context
 description: "Manual trigger to save all memory, session state, and run skill-builder. Use /save-context when you want to force a context save. Also triggers automatically before git commits via hook."
+version: 1.0.0
+author: omaperoha
 ---
 
 # /save-context — Force Context Save

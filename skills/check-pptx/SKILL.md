@@ -1,6 +1,8 @@
 ---
 name: check-pptx
 description: "Manual trigger to run PPTX quality checks. Use /check-pptx before generating or committing any presentation. Checks dimensions, KPI counts, schema accuracy, and common mistakes."
+version: 1.0.0
+author: omaperoha
 ---
 
 # /check-pptx — Presentation Quality Check

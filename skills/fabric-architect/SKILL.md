@@ -1,6 +1,8 @@
 ---
 name: fabric-architect
 description: Senior Data Architect for Microsoft Fabric Medallion architecture. Use this skill when working on Bronze/Silver/Gold layer design, Delta Lake tables, PySpark notebooks, star/constellation schemas, Direct Lake semantic models, DAX measures, SFTP ingestion, or any architecture decision for Fabric projects. Trigger whenever the task involves data modeling, pipeline design, schema decisions, or answering "how should we build X" questions about the Fabric platform.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Fabric Architect — Senior Data Architect Agent

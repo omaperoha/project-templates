@@ -1,6 +1,8 @@
 ---
 name: Edge TTS Narration
 description: Free Microsoft Edge TTS for professional narration audio (presentations, videos). Use instead of Replicate MiniMax.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Edge TTS Narration

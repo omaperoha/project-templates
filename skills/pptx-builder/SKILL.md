@@ -1,11 +1,15 @@
 ---
 name: pptx-builder
-description: PowerPoint presentation builder using pptxgenjs for the Fabric Datalake project. Use this skill when creating, modifying, or fixing .pptx presentations via JavaScript/Node.js generation scripts. Trigger on any PPTX work that uses pptxgenjs, Ocean Gradient palette, or when building slides programmatically. Also use the anthropic-skills:pptx skill for direct PPTX manipulation.
+description: PowerPoint presentation builder using pptxgenjs or python-pptx. Use this skill when creating, modifying, or fixing .pptx presentations via JavaScript/Node.js or Python generation scripts. Trigger on any PPTX work that builds slides programmatically. Also use the anthropic-skills:pptx skill for direct PPTX manipulation.
+version: 1.0.0
+author: omaperoha
 ---
 
-# PPTX Builder — pptxgenjs Presentation Specialist
+# PPTX Builder — Programmatic Presentation Specialist
 
-## Ocean Gradient Palette
+## Default Palette (Ocean Gradient)
+A proven palette for data/analytics presentations. Override in your project's CLAUDE.md if the customer has a branded template.
+
 ```javascript
 const C = {
   navy: "1E2761",      // Primary background
@@ -34,6 +38,7 @@ const C = {
 4. **No negative shadow offset values**
 5. **No opacity in hex strings** — opacity goes as separate property in shadow config
 6. **`fs` require at top of file** when embedding images
+7. **Default slide size**: 10" × 5.625" — override with `pres.layout = 'LAYOUT_WIDE'` if needed
 
 ## Image Embedding (prevents PPTX corruption)
 
@@ -41,7 +46,7 @@ const C = {
 const fs = require("fs");
 const path = require("path");
 
-function addInfographic(pres, filename, notes) {
+function addInfographic(pres, filename, notes, bgColor) {
   const filepath = path.join(__dirname, filename);
   if (!fs.existsSync(filepath)) {
     console.log("  SKIP (missing): " + filename);
@@ -52,7 +57,7 @@ function addInfographic(pres, filename, notes) {
   const mime = isJpeg ? "image/jpeg" : "image/png";
   const b64 = mime + ";base64," + buf.toString("base64");
   const slide = pres.addSlide();
-  slide.background = { color: "1E2761" };
+  slide.background = { color: bgColor || "1E2761" };
   slide.addImage({
     data: b64, x: 0, y: 0, w: 10, h: 5.625,
     sizing: { type: "contain", w: 10, h: 5.625 }
@@ -61,51 +66,44 @@ function addInfographic(pres, filename, notes) {
 }
 ```
 
-## Presentation Rules
+## Universal Presentation Rules
 
 ### Content Rules
-- **Never reference Plan B in Plan A** presentations (and vice versa)
-- **Show 338h total** — never split into 250h DE + 30h AE
-- **Copilot readiness is ALWAYS in scope** regardless of F64 availability
-- **Neutral file delivery language**: "Files arrive in the Landing Zone" not "customer/Paycom delivers"
-- **Never cite user notes** as sources
+- **Every slide must have speaker notes**
+- **Infographics go AFTER their content slide**, not batched at the end
 - **"Accept risk" is never an option** for PII — defense-in-depth is default
+- **Never cite internal session notes** as sources in customer-facing slides
 
 ### Structure Rules
-- **Logical layer-by-layer story**: Context → Challenge → Solution (layer by layer) → Analytics → Operations → Delivery
+- **Logical story**: Context → Challenge → Solution → Analytics/Value → Operations → Delivery
 - **Add agenda slide** after title
-- **Every slide must have speaker notes**
-- **Infographics go AFTER their content slide**, not at the end
-- **Don't duplicate information** — if a content slide has it, the infographic reinforces the concept visually
+- **Don't duplicate information** — infographic reinforces the content slide, not repeats it
 
 ### Readability Rules
 - If text is too small, split into multiple slides
 - Don't force/deform images — create at proper resolution
 - Tables must be legible at presentation distance
-- Max 6-8 items per slide
+- Max 6–8 items per slide
 
-### Architecture Accuracy
-- Plan A Gold: 7 dims + 4 facts (constellation schema)
-- Plan B Gold: 4 dims + 3 facts (simplified star)
-- SFTP Pipeline is IN SCOPE for Plan A (Stage 0)
-- Security: 5 layers (Landing → Bronze → Silver → Gold → Semantic Model)
+## Customer-Branded Template (python-pptx)
 
-## CDW Template (python-pptx) — CRITICAL RULES
+When using a customer's PowerPoint template (.pptx), check dimensions FIRST:
 
-When building with python-pptx using the CDW PowerPoint Template:
+```python
+from pptx import Presentation
+from pptx.util import Inches
+prs = Presentation("template.pptx")
+print(prs.slide_width / 914400, prs.slide_height / 914400)  # inches
+```
 
-**Dimensions:** 13.33" x 7.50" (NOT 10x5.625)
-
-**Title layout (index 0):** NEVER override font colors on placeholders. Just set `shape.text = "..."` and let the template style it. Overriding `p.font.color.rgb` breaks rendering.
-
-**Agenda layout (index 3):** UNRELIABLE placeholder rendering. Use BLANK layout (index 26) with manual numbered boxes + `stitle(s, "Agenda")` instead.
-
-**Closing layout (index 29):** Works reliably. Same rule — set text only, no font overrides.
-
-**Reference implementation:** `docs/presentations/build_data_analysis_v4.py` — the WORKING pattern for CDW template slides.
+**Critical rules for branded templates:**
+- **NEVER override font colors on layout placeholders** — just set `shape.text = "..."` and let the template style apply
+- **Agenda layouts are often unreliable** — use BLANK layout with manual boxes instead
+- **Save as a NEW file** (v2) if the original may be open in PowerPoint
+- Record the template's layout indices before using: `for i, l in enumerate(prs.slide_layouts): print(i, l.name)`
 
 ## File Conventions
-- Generator scripts: `docs/presentations/generate_plan_a_final.js`
-- Infographic version: `docs/presentations/generate_plan_a_infographics.js`
-- Output: `docs/presentations/plan_a_architecture.pptx` or `plan_a_with_infographics.pptx`
-- Run with: `node docs/presentations/generate_plan_a_final.js`
+- Generator scripts live near output: `docs/presentations/generate_<name>.js`
+- Python builders: `scripts/build_<name>.py`
+- Run JS: `node docs/presentations/generate_<name>.js`
+- Run Python: `py scripts/build_<name>.py`

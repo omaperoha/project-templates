@@ -1,6 +1,8 @@
 ---
 name: remind-rules
 description: "Manual trigger to print ALL presentation rules, dimension requirements, and common mistakes. Use /remind-rules when starting PPTX work or when you suspect rules are being forgotten."
+version: 1.0.0
+author: omaperoha
 ---
 
 # /remind-rules — Print All Rules

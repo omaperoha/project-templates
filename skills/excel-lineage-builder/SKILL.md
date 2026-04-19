@@ -1,6 +1,8 @@
 ---
-name: Excel Field Lineage Builder
-description: Generate multi-sheet Excel field lineage trackers with openpyxl for data platform projects
+name: excel-lineage-builder
+description: Generate multi-sheet Excel field lineage trackers with openpyxl for Medallion architecture projects. Use this skill when you need source-to-Gold column traceability, field mapping documentation, or Copilot readiness metadata for a data platform project.
+version: 1.0.0
+author: omaperoha
 ---
 
 # Excel Field Lineage Builder
@@ -71,11 +73,11 @@ def _ben(src_file, silver_tbl, name, code, pfx, has_cov, note):
     return rows
 ```
 
-### 2. CDW-branded formatting
+### 2. Branded formatting (customize per project)
 ```python
-CDW_DARK_BLUE = "112E66"  # Header background
-CDW_LIGHT_BLUE = "E8F0FE"  # Alternating rows
-HDR_FONT = Font(name="Source Sans Pro", size=10, bold=True, color="FFFFFF")
+HDR_BG = "112E66"        # Header background — override with customer brand color
+ROW_ALT = "E8F0FE"       # Alternating rows
+HDR_FONT = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
 ```
 
 ### 3. Conditional formatting by status
@@ -103,4 +105,4 @@ HDR_FONT = Font(name="Source Sans Pro", size=10, bold=True, color="FFFFFF")
 - All data hardcoded inline (no dynamic markdown parsing) for reliability
 
 ## Reference Implementation
-See `Fabric-Datalake/scripts/build_field_lineage.py` (~1250 lines, generates 48KB xlsx with 230 lineage rows).
+See `scripts/build_field_lineage.py` in the project repo (~1250 lines, generates 48KB xlsx with 230+ lineage rows). Adapt column counts and schema names to your project's architecture plan.

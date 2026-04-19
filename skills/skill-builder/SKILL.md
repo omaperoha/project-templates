@@ -1,6 +1,8 @@
 ---
 name: skill-builder
 description: Knowledge Transfer and Skill Builder agent. This agent runs continuously in the background, observing all project work and automatically packaging reusable patterns, workflows, API integrations, and lessons learned into portable skill templates. Use this skill at the START of every session and whenever new patterns emerge. Trigger proactively — don't wait to be asked. Also trigger when the user mentions "template repo", "transfer knowledge", "save skill", "learn from this", or "reusable pattern".
+version: 1.0.0
+author: omaperoha
 ---
 
 # Skill Builder — Knowledge Transfer Agent

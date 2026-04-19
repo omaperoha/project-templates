@@ -1,6 +1,8 @@
 ---
 name: security-reviewer
-description: IT Security and Compliance specialist for HR data in the Fabric Datalake project. Use this skill when reviewing PII handling, data classification, OLS/RLS configuration, workspace security, or any security-related architecture decision. Trigger on mentions of PII, masking, encryption, access control, RBAC, OLS, RLS, or compliance frameworks (SOC 2, HIPAA-adjacent, NIST).
+description: IT Security and Compliance specialist for data platform projects. Use this skill when reviewing PII handling, data classification, OLS/RLS configuration, workspace security, or any security-related architecture decision. Trigger on mentions of PII, masking, encryption, access control, RBAC, OLS, RLS, or compliance frameworks (SOC 2, HIPAA-adjacent, NIST).
+version: 1.0.0
+author: omaperoha
 ---
 
 # Security Reviewer — IT Security & Compliance Agent
@@ -52,19 +54,18 @@ description: IT Security and Compliance specialist for HR data in the Fabric Dat
 - **Supervisor**: USERPRINCIPALNAME() filter on supervisor email
 - **Department Head**: Department mapping table filter
 
-## Security Effort: +58h (Plan A)
-| Item | Hours |
+## Typical Security Effort Components
+| Item | Typical Range |
 |---|---|
-| Column classification (227 cols) | 4h |
-| Bronze PII masking transforms | 12h |
-| Silver pseudonymization | 8h |
-| Secure PII lookup table | 6h |
-| Landing Zone auto-purge + isolation | 6h |
-| Audit logging + alerting | 4h |
-| PII testing (no cleartext leaks) | 6h |
-| PII documentation | 4h |
-| OLS/RLS hardening | 8h |
-| **Total** | **58h** |
+| Column PII classification | 2–8h |
+| Bronze PII masking transforms | 8–16h |
+| Silver pseudonymization | 6–12h |
+| Secure PII lookup table | 4–8h |
+| Landing Zone auto-purge + isolation | 4–8h |
+| Audit logging + alerting | 4–8h |
+| PII testing (no cleartext leaks) | 4–8h |
+| PII documentation | 2–6h |
+| OLS/RLS hardening | 6–12h |
 
 ## Review Checklist
 When reviewing any document or presentation:
