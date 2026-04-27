@@ -107,27 +107,30 @@ Before EVERY session ends:
 5. Verify global skills match project skills where applicable
 6. List what was learned this session in a commit message
 
-## Current Skill Inventory (as of 2026-04-01)
+## Current Skill Inventory (as of 2026-04-27)
 
 | Skill | Location | Last Updated | Status |
 |-------|----------|-------------|--------|
-| fabric-architect | project + global | 2026-04-01 | Updated (18 relationships, blended security) |
-| nano-banana | project + global | 2026-03-30 | Updated (CDW colors, seed capture, Windows paths) |
-| nano-banana-prompter | project + global | 2026-03-30 | NEW |
-| pptx-builder | project + global | 2026-03-30 | Updated (CDW template rules) |
+| fabric-architect | project + global | 2026-04-01 | Current |
+| nano-banana | project + global | 2026-03-30 | Current |
+| nano-banana-prompter | project + global | 2026-03-30 | Current |
+| pptx-builder | project + global | 2026-03-30 | Current |
 | security-reviewer | project + global | 2026-03-24 | Current |
 | doc-sync | project + global | 2026-03-24 | Current |
-| presentation-reviewer | project + global | 2026-03-30 | Updated (CDW placeholders, ROI math, competitive claims) |
-| skill-builder | project + global | 2026-04-01 | Updated |
-| qa-engineer | project + global | 2026-04-01 | NEW |
-| docx-generator | project + global + templates | 2026-04-01 | NEW |
-| git-manager | project + global | 2026-03-26 | Current |
+| presentation-reviewer | project + global | 2026-03-30 | Current |
+| skill-builder | project + global | 2026-04-27 | Updated (lessons 29-63) |
+| qa-engineer | project + global | 2026-04-01 | Current |
+| docx-generator | project + global + templates | 2026-04-01 | Current |
+| git-manager | project + global | 2026-04-22 | Updated (Windows Credential Manager bypass) |
+| gcp-cloud-shell | global + templates | 2026-04-26 | NEW |
 | save-context | project + global | 2026-03-25 | Current |
 | check-pptx | project + global | 2026-03-25 | Current |
 | remind-rules | project + global | 2026-03-25 | Current |
 | team-status | project + global | 2026-03-25 | Current |
+| edge-tts-narration | project + global | 2026-04-15 | Current |
+| mp4-video-assembly | project + global | 2026-04-15 | Current |
 
-## Lessons Already Captured (as of 2026-04-01)
+## Lessons Already Captured (as of 2026-04-27)
 
 1. Replicate API is async — `Prefer: wait` fails, must poll
 2. pptxgenjs: no # in hex, makeShadow() factory, RECTANGLE only, base64 MIME detection for images
@@ -157,3 +160,38 @@ Before EVERY session ends:
 26. XLSX: must be automated ingestion, manual upload ruled out
 27. Dual format delivery: always generate .md AND .docx, keep in sync
 28. Save deliverables to MAIN repo path, not worktree — user can't see worktree files
+29. GCP Terraform: pre-existing resources show as `+ create` if missing from state — always run pre-import sanity checks before `terraform plan`. Import ID formats: workflows=`projects/{p}/locations/{r}/workflows/{name}`, buckets=`{project}/{name}`, functions=`projects/{p}/locations/{r}/functions/{name}`, scheduler=`projects/{p}/locations/{r}/jobs/{name}`, BQ routines=`projects/{p}/datasets/{d}/routines/{name}`
+30. GCP Terraform: `google_bigquery_job` provider defaults location to "US" — ALWAYS set explicit `location = var.default_region`. Same trap in Cloud Workflows YAML (`location: "US"` targets BQ at runtime). Both pass `terraform apply` silently and only fail when the BQ API call executes.
+31. Antigravity instruction hardening: (1) "Never open browser/Cloud Shell" at top, (2) "Do NOT edit .tf/.py/.yaml/.json" at top, (3) include `cmd /c` wrapper note for Windows, (4) pre-import sanity checks before any import commands, (5) explicit STOP conditions with exact resource names, (6) `git pull` as Step 1
+32. 3-round Terraform peer review: Round 1=obvious blockers, Round 2=cascade/ForceNew risks, Round 3=hidden runtime bugs. Always check BOTH plan-time AND runtime safety — some bugs (BQ job location, workflow YAML location) pass apply and only fail at execution time.
+33. Windows cmd/c quoting (CDW machines): ALL commands need `cmd /c "..."` wrapper. Inside the wrapper: NEVER use inner double quotes or `\"` escapes. Use `--format=value(name)` not `--format="value(name)"`.
+34. Windows preview_start path-with-spaces: use `powershell` as `runtimeExecutable` with `-NoProfile -ExecutionPolicy Bypass -Command`. Use `npx.cmd` not `npx` on Windows with restricted policy.
+35. Cloud Function local dev: ADC required. `@google-cloud/functions-framework` starts without ADC but every GCP API call fails at runtime. Run `gcloud auth application-default login` before starting the dev server.
+36. Windows Credential Manager + GitHub: stale device-flow tokens cause `expired_token`. Fix: `git config credential.helper "!gh auth git-credential"` — routes through gh CLI keyring token.
+37. Looker API: yesno dimensions cannot be used in query `filters` dict (HTTP 400). Use field-level string filters.
+38. Looker Looks already exist: `POST /api/4.0/looks` returns 422 if title+folder already exists. Use `PATCH /api/4.0/looks/{id}` with `{'query_id': new_id}` to update.
+39. Looker listing pages + derived dims: `SPLIT(page_name,'|')[SAFE_OFFSET(1)]` returns NULL for listing pages — CORRECT. QA tests should check "at least some rows have partner_name" not "all".
+40. Looker `event_datetime` cross-view reference: works only if the source `events` join exists in the explore.
+41. Cloud Function DQ validation placement: after parsing, before staging load. Use `columnNames.indexOf()` not hardcoded position. `Number(val) + Number.isFinite(num)` to safely handle non-numeric cells. Never drop rows — flag + ingest.
+42. Synthetic data dirty injection: inject controlled dirty records as the LAST step of generation, at ~4% probability per type per row, independently rolled.
+43. Score column identification: `_a`/`_b`/`_best`=student scores; `_pts`=config value; `_type`=non-numeric. iPPR columns use 0–130 scale — list in `METADATA_COLUMNS` exclusion set.
+44. Max score constant coupling: Cloud Function (`MAX_INDIVIDUAL_SCORE`) and synthetic data generator (`pts`) must agree. Update both files when the constant changes.
+45. GCP Cloud Functions Gen2 + Terraform source hash: add `SOURCE_HASH = data.archive_file.*.output_sha256` to env vars — forces redeploy on code change. Without it, Terraform only tracks GCS object name, not content.
+46. Google Drive + Service Accounts: SAs have NO Drive storage quota — `drive.files().create()` always fails with `storageQuotaExceeded`. Use user OAuth credentials for any script creating Drive files. Best pattern without gcloud SDK: `InstalledAppFlow.from_client_secrets_file()` + `flow.run_local_server(port=0)`.
+47. LookML `--` SQL comments expand `${...}` — CRITICAL: Looker expands ALL `${dim}` references found anywhere in a `sql:` block, including inside `--` SQL comments. Use `#` for all developer notes in LookML.
+48. Use raw BigQuery columns in LookML `sql_always_where`, never PII-masked dimensions.
+49. GA4 fires multiple events per page load — add `event_name = 'page_view'` filter to any Look that parses `page_name`.
+50. Looker Look SQL inspection: `GET /api/4.0/looks/{id}/run/sql` returns the complete generated SQL — fastest way to debug expansion bugs, null fields, and filter logic.
+51. LookML `#` vs `--` comment scoping: `#` is processed by LookML parser and stripped before SQL generation. `--` is passed to the SQL engine; Looker still expands `${...}` inside it.
+52. CDW corporate GCP accounts + OAuth: always blocked on non-CDW-managed devices (BeyondCorp). Solution: GCP Cloud Shell opened from GCP Console in CDW browser. See `gcp-cloud-shell` skill.
+53. GitHub CLI in Cloud Shell: password auth removed. Use `gh auth login` (device code flow) or `export GH_TOKEN=ghp_...`. Missing `read:org` scope gives validation error.
+54. gcloud auth application-default login must run in Cloud Shell BEFORE any Python script — Cloud Shell defaults to Compute Engine SA which is missing the `email` field → `RefreshError`.
+55. Grep the entire repo for hardcoded values before declaring a bug fix complete — check every file type (.js, .sql, .py, .yaml, .json, .tf, .tftpl).
+56. `_ingest_ledger` empty = MERGE never succeeded. Use as primary pipeline diagnostic. `raw_data` row count does NOT confirm the pipeline ran (Terraform seed loads pre-populate it).
+57. Google Drive folder sharing does NOT automatically make files accessible by ID for SA. SA needs explicit permission on the folder (propagates to children). Manage via Drive API or Drive UI — not IAM, not Terraform.
+58. SA write to user-created Google Sheets works once shared — permanent CDW Drive bypass pattern: (1) User creates blank sheets manually; (2) shares with operator SA as Editor and function SA as Viewer; (3) operator SA populates via Sheets API batchUpdate; (4) function SA reads by ID.
+59. Terraform QA must run 3+ post-change iterations: plan → apply → pipeline re-trigger → timestamp-filtered audit log.
+60. Historical audit log entries vs current run — always filter by `TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 60 MINUTE)` to distinguish pre-apply from post-apply failures.
+61. Terraform orphan GCS objects from manual patches — confirm with `gsutil ls`, then delete with `gsutil rm` after `terraform apply` adopts the canonical copy.
+62. Terraform apply race condition on first trigger — automated Cloud Scheduler may fire immediately after apply before new resources fully propagate. Expected; manual re-trigger seconds later succeeds.
+63. Customer delivery docs for GCP projects (no GitHub): (1) All commands via Google Cloud Shell — no local software install needed; (2) Variable block at top of commands doc — customer sets 5 variables once per session, all commands reference them; (3) Every phase ends with a verification command; (4) `variables_template.tfvars` placed in `docs/` not `infra/` — customer copies it explicitly; (5) `*.tfvars` gitignore catches template files — use `git add -f` for templates with only `<<FILL_IN>>` placeholders; (6) Leave `index_sheet_url` blank in first apply, fill + re-apply after Phase 4 (two-pass pattern); (7) Looker Studio section inlines all calculated field formulas — no cross-doc references for the customer.
